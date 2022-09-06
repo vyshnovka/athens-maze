@@ -44,8 +44,8 @@ public class LevelConstructor : MonoBehaviour
         }
         for (float i = 0, offset = 0.5f; i < level.height; i++, offset++)
         {
-            Instantiate(level.tile, new Vector2(-level.width / 2, level.height / 2 - offset), Quaternion.identity);
-            Instantiate(level.tile, new Vector2(level.width / 2, level.height / 2 - offset), Quaternion.identity);
+            Instantiate(level.tile, new Vector2(-level.width / 2, level.height / 2 - offset), Quaternion.identity, tiles);
+            Instantiate(level.tile, new Vector2(level.width / 2, level.height / 2 - offset), Quaternion.identity, tiles);
         }
 
         //spawning tiles for the level
