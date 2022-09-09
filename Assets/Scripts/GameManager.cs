@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
@@ -17,11 +18,10 @@ public class GameManager : MonoBehaviour
     [NonSerialized]
     public bool enemyCanMove = false;
 
-    //again BAD practive to insert UI in functionalities, but it is now not that important
     [SerializeField]
-    private GameObject winUI;
+    private UnityEvent onWinEvent;
     [SerializeField]
-    private GameObject looseUI;
+    private UnityEvent onLooseEvent;
 
     void Awake()
     {
@@ -61,30 +61,6 @@ public class GameManager : MonoBehaviour
     {
         if (!playerCanMove && !IsWin())
         {
-            //double function calling since the enemy if moving twice
-            //for (int i = 0; i < 2; i++)
-            //{
-            //    StartCoroutine(Utility.TimedEvent(() =>
-            //    {
-            //        enemy.FindPath();
-            //        IsDead();
-            //    }, 0.5f));
-            //}
-
-
-            //could be done in a single coroutine with two yield returns (or in a loop), but i just wanted to use that script
-            StartCoroutine(Utility.TimedEvent(() =>
-            {
-                enemy.FindPath();
-                IsDead();
-            }, 0.5f));
-
-            StartCoroutine(Utility.TimedEvent(() =>
-            {
-                enemy.FindPath();
-                IsDead();
-            }, 1f));
-
             StartCoroutine(WaitForEnemy());
         }
     }
@@ -92,7 +68,20 @@ public class GameManager : MonoBehaviour
     //to prevent moving while enemy is still taking steps
     private IEnumerator WaitForEnemy()
     {
-        yield return new WaitForSeconds(1.1f);
+        yield return new WaitForSeconds(0f);
+
+        for (int i = 0; i < 2; i++)
+        {
+            var direction = enemy.FindPath();
+
+            if (direction != Vector2.zero)
+            {
+                yield return new WaitForSeconds(0.5f);
+                enemy.Move(direction);
+            }
+
+            IsDead();
+        }
 
         ExchangeTurns();
     }
@@ -103,7 +92,7 @@ public class GameManager : MonoBehaviour
         {
             ExchangeTurns();
 
-            looseUI.SetActive(true);
+            onLooseEvent?.Invoke();
 
             return true;
         }
@@ -120,7 +109,7 @@ public class GameManager : MonoBehaviour
 
         if (player.transform.position == exit.position)
         {
-            winUI.SetActive(true);
+            onWinEvent?.Invoke();
 
             return true;
         }

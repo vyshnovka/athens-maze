@@ -307,7 +307,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: c386ad8fbc038074dbf3ff086ebf1841, type: 2}
   - {fileID: 11400000, guid: e6114598360fb7f43998fef72f14f687, type: 2}
   - {fileID: 11400000, guid: e7a0c5b8b6fad2942aec003640fdecec, type: 2}
-  note: {fileID: 378131133}
+  note: {fileID: 378131135}
 --- !u!1 &331834744
 GameObject:
   m_ObjectHideFlags: 0
@@ -418,8 +418,36 @@ MonoBehaviour:
   player: {fileID: 1661580335736054772}
   enemy: {fileID: 8351623989047561761}
   exit: {fileID: 1605620816}
-  winUI: {fileID: 331834744}
-  looseUI: {fileID: 1763442581}
+  onWinEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 331834744}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+  onLooseEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1763442581}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
 --- !u!4 &360677967
 Transform:
   m_ObjectHideFlags: 0
@@ -446,6 +474,7 @@ GameObject:
   - component: {fileID: 378131132}
   - component: {fileID: 378131134}
   - component: {fileID: 378131133}
+  - component: {fileID: 378131135}
   m_Layer: 5
   m_Name: Note
   m_TagString: Untagged
@@ -573,6 +602,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 378131131}
   m_CullTransparentMesh: 1
+--- !u!114 &378131135
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 378131131}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad467677fcc584f4ca7a6e9e2131f5c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &462043097
 GameObject:
   m_ObjectHideFlags: 0
@@ -1514,7 +1555,7 @@ GameObject:
   - component: {fileID: 1763442584}
   - component: {fileID: 1763442583}
   m_Layer: 5
-  m_Name: Dead
+  m_Name: Loose
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

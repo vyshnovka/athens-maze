@@ -1,36 +1,39 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Net;
 using UnityEngine;
 
 public class EnemyController : EntityController
 {
-    public void FindPath()
+    public Vector2 FindPath()
     {
         var player = GameManager.instance.player.transform.position;
 
-        if (player.x < transform.position.x)
+        if (player.x < transform.position.x && !CheckForWall(Vector2.left))
         {
             //player is on the left
-            CheckForWall(Vector2.left);
+            return Vector2.left;
         }
-        else if (player.x > transform.position.x)
+
+        if (player.x > transform.position.x && !CheckForWall(Vector2.right))
         {
             //player is on the right
-            CheckForWall(Vector2.right);
+            return Vector2.right;
         }
-        else
+
+        //player is in the same column
+        if (player.y > transform.position.y && !CheckForWall(Vector2.up))
         {
-            //player is in the same column
-            if (player.y > transform.position.y)
-            {
-                //player is above
-                CheckForWall(Vector2.up);
-            }
-            else if (player.y < transform.position.y)
-            {
-                //player is below
-                CheckForWall(Vector2.down);
-            }
+            //player is above
+            return Vector2.up;
         }
+        
+        if (player.y < transform.position.y && !CheckForWall(Vector2.down))
+        {
+            //player is below
+            return Vector2.down;
+        }
+
+        return Vector2.zero;
     }
 }

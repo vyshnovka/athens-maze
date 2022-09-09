@@ -14,19 +14,31 @@ public class PlayerController : EntityController
 
         if (Input.GetKeyDown(KeyCode.UpArrow))
         {
-            CheckForWall(Vector2.up);
+            if (!CheckForWall(Vector2.up))
+            {
+                Move(Vector2.up);
+            }
         }
         if (Input.GetKeyDown(KeyCode.DownArrow))
         {
-            CheckForWall(Vector2.down);
+            if (!CheckForWall(Vector2.down))
+            {
+                Move(Vector2.down);
+            }
         }
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
-            CheckForWall(Vector2.left);
+            if (!CheckForWall(Vector2.left))
+            {
+                Move(Vector2.left);
+            }
         }
         if (Input.GetKeyDown(KeyCode.RightArrow))
         {
-            CheckForWall(Vector2.right);
+            if (!CheckForWall(Vector2.right))
+            {
+                Move(Vector2.right);
+            }
         }
     }
 

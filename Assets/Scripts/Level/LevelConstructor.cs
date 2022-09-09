@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -16,9 +15,8 @@ public class LevelConstructor : MonoBehaviour
 
     private int currentLevel;
 
-    //bad practice to mess up UI with actions, but yeah
     [SerializeField]
-    private TextMeshProUGUI note;
+    private Note note;
 
     void Awake()
     {
@@ -34,7 +32,7 @@ public class LevelConstructor : MonoBehaviour
 
         level = levels[currentLevel];
 
-        note.text += level.notification;
+        note.ShowLevelInfo(level.notification);
 
         //drawing borders
         for (float i = 0, offset = 0.5f; i < level.width; i++, offset++)

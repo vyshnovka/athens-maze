@@ -23,36 +23,44 @@ public class EntityController : MonoBehaviour
     }
 
     //checking for the move availability
-    protected void CheckForWall(Vector2 direction)
+    protected bool CheckForWall(Vector2 direction)
     {
         Vector2 desiredPosition = (Vector2)transform.position + direction;
 
-        if (direction == Vector2.right && IsWallFromSide(desiredPosition, 0.5f))
+        float offset = 0.5f;
+
+        if (direction == Vector2.left || direction == Vector2.down) 
         {
-            return;
-        }
-        else if (direction == Vector2.left && IsWallFromSide(desiredPosition, -0.5f))
-        {
-            return;
-        } 
-        else if (direction == Vector2.up && IsWallInLine(desiredPosition, 0.5f))
-        {
-            return;
-        }
-        else if (direction == Vector2.down && IsWallInLine(desiredPosition, -0.5f))
-        {
-            return;
+            offset *= -1;
         }
 
-        Move(direction);
+        if (direction == Vector2.left || direction == Vector2.right)
+        {
+            return IsWallFromSide(desiredPosition, offset, true);
+        }
+        else
+        {
+            return IsWallFromSide(desiredPosition, offset, false);
+        }
     }
 
-    //checking if there is a wall on X asix
-    private bool IsWallFromSide(Vector2 position, float offset)
+    //checking if there is a wall depending on isSide
+    private bool IsWallFromSide(Vector2 position, float offset, bool isSide)
     {
+        Vector2 direction = new Vector2(0, 0);
+
+        if (isSide)
+        {
+            direction = new Vector2(position.x - offset, position.y);
+        }
+        else
+        {
+            direction = new Vector2(position.x, position.y - offset);
+        }
+
         for (int i = 0; i < tiles.Count; i++)
         {
-            if ((Vector2)tiles[i].position == new Vector2(position.x - offset, position.y))
+            if ((Vector2)tiles[i].position == direction)
             {
                 if (!GameManager.instance.playerCanMove)
                 {
@@ -65,25 +73,7 @@ public class EntityController : MonoBehaviour
         return false;
     }
 
-    //checking if there is a wall on Y asix
-    private bool IsWallInLine(Vector2 position, float offset)
-    {
-        for (int i = 0; i < tiles.Count; i++)
-        {
-            if ((Vector2)tiles[i].position == new Vector2(position.x, position.y - offset))
-            {
-                if (!GameManager.instance.playerCanMove)
-                {
-                    PushCurrentPositionInStack();
-                }
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private void Move(Vector2 direction)
+    public void Move(Vector2 direction)
     {
         PushCurrentPositionInStack();
 
