@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -73,15 +72,22 @@ public class LevelConstructor : MonoBehaviour
     /// <summary>Draw level frame depending on the specified size.</summary>
     private void DrawBorders()
     {
-        for (float i = 0, offset = 0.5f; i < currentLevelData.Width; i++, offset++)
+        //Calculate the half-width and half-height of the level area.
+        float halfWidth = currentLevelData.Width / 2f;
+        float halfHeight = currentLevelData.Height / 2f;
+
+        //Instantiate vertical walls.
+        for (float i = -halfWidth + 0.5f; i <= halfWidth - 0.5f; i++)
         {
-            Instantiate(tilePrefab, new Vector2(-currentLevelData.Width / 2 + offset, currentLevelData.Height / 2), Quaternion.Euler(0, 0, 90), Tiles);
-            Instantiate(tilePrefab, new Vector2(-currentLevelData.Width / 2 + offset, -currentLevelData.Height / 2), Quaternion.Euler(0, 0, 90), Tiles);
+            Instantiate(tilePrefab, new Vector2(i, halfHeight), Quaternion.Euler(0, 0, 90), Tiles);
+            Instantiate(tilePrefab, new Vector2(i, -halfHeight), Quaternion.Euler(0, 0, 90), Tiles);
         }
-        for (float i = 0, offset = 0.5f; i < currentLevelData.Height; i++, offset++)
+
+        //Instantiate horizontal walls.
+        for (float i = -halfHeight + 0.5f; i <= halfHeight - 0.5f; i++)
         {
-            Instantiate(tilePrefab, new Vector2(-currentLevelData.Width / 2, currentLevelData.Height / 2 - offset), Quaternion.identity, Tiles);
-            Instantiate(tilePrefab, new Vector2(currentLevelData.Width / 2, currentLevelData.Height / 2 - offset), Quaternion.identity, Tiles);
+            Instantiate(tilePrefab, new Vector2(-halfWidth, i), Quaternion.identity, Tiles);
+            Instantiate(tilePrefab, new Vector2(halfWidth, i), Quaternion.identity, Tiles);
         }
     }
 
