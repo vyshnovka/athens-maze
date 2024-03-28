@@ -4,12 +4,17 @@ using UnityEngine;
 [Serializable]
 public class Tile
 {
-    public Vector3 position;
-    public Quaternion rotation;
+    [SerializeField]
+    private Vector3 position;
+    [SerializeField]
+    private Quaternion rotation;
+
+    public Vector3 Position { get => position; set => position = value; }
+    public Quaternion Rotation { get => rotation; set => rotation = value; }
 
     public Tile(Vector3 pos, Quaternion rot)
     {
-        position = pos;
-        rotation = rot;
+        Position = pos;
+        Rotation = rot;
     }
 }

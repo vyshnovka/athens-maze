@@ -1,75 +1,97 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class LevelConstructor : MonoBehaviour
 {
-    public Transform tiles;
-
+    [Header("Gameplay Elements & Entities")]
     [SerializeField]
-    public List<LevelScriptableObject> levels;
-    [NonSerialized]
-    public LevelScriptableObject level;
-
-    private int currentLevel;
-
+    private Transform tiles;
     [SerializeField]
     private Note note;
+    [SerializeField]
+    private PlayerController player;
+    [SerializeField]
+    private EnemyController enemy;
+    [SerializeField]
+    private Transform exit;
+
+    [Header("Objects to spawn")]
+    [SerializeField]
+    private GameObject tilePrefab;
+
+    [Header("Level Info")]
+    [SerializeField]
+    private List<LevelScriptableObject> levels;
+
+    private LevelScriptableObject currentLevelData;
+    private int currentLevelIndex;
+
+    public Transform Tiles { get => tiles; set => tiles = value; }
 
     void Awake()
     {
-        //tiny save system
-        currentLevel = PlayerPrefs.GetInt("Level", 0);
+        //Save level index.
+        currentLevelIndex = PlayerPrefs.GetInt("Level", 0);
 
-        //checking if we are not out of boundaries of a list
-        //and making the game infinite
-        if (currentLevel > levels.Count - 1)
+        //Make the game infinite.
+        if (currentLevelIndex > levels.Count - 1)
         {
-            currentLevel = 0;
+            currentLevelIndex = 0;
         }
 
-        level = levels[currentLevel];
+        currentLevelData = levels[currentLevelIndex];
 
-        note.ShowLevelInfo(level.notification);
+        note.ShowLevelInfo(currentLevelData.Note);
 
-        //drawing borders
-        for (float i = 0, offset = 0.5f; i < level.width; i++, offset++)
-        {
-            Instantiate(level.tile, new Vector2(-level.width / 2 + offset, level.height / 2), Quaternion.Euler(0, 0, 90), tiles);
-            Instantiate(level.tile, new Vector2(-level.width / 2 + offset, -level.height / 2), Quaternion.Euler(0, 0, 90), tiles);
-        }
-        for (float i = 0, offset = 0.5f; i < level.height; i++, offset++)
-        {
-            Instantiate(level.tile, new Vector2(-level.width / 2, level.height / 2 - offset), Quaternion.identity, tiles);
-            Instantiate(level.tile, new Vector2(level.width / 2, level.height / 2 - offset), Quaternion.identity, tiles);
-        }
+        DrawBorders();
+        DrawObstacles();
 
-        //spawning tiles for the level
-        foreach (var tile in level.grid)
-        {
-            Instantiate(level.tile, tile.position, tile.rotation, tiles);
-        }
+        //Set entities' positions.
+        player.transform.position = currentLevelData.PlayerPosition;
+        enemy.transform.position = currentLevelData.EnemyPosition;
 
-        //setting player's and enemy's position
-        GameManager.instance.player.transform.position = level.playerPos;
-        GameManager.instance.enemy.transform.position = level.enemyPos;
-
-        //setting the exit
-        GameManager.instance.exit.transform.position = level.exitPos;
+        //Set exit position.
+        exit.transform.position = currentLevelData.ExitPosition;
     }
 
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            //next level becomes available only after passing the previous one
-            if (GameManager.instance.IsWin())
+            //Next level becomes available only after passing the previous one.
+            if (GameManager.Instance.HasPlayerWon())
             {
-                PlayerPrefs.SetInt("Level", currentLevel + 1);
+                PlayerPrefs.SetInt("Level", currentLevelIndex + 1);
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             }
         }
     }
+
+    #region Level Walls Builder
+    /// <summary>Draw level frame depending on the specified size.</summary>
+    private void DrawBorders()
+    {
+        for (float i = 0, offset = 0.5f; i < currentLevelData.Width; i++, offset++)
+        {
+            Instantiate(tilePrefab, new Vector2(-currentLevelData.Width / 2 + offset, currentLevelData.Height / 2), Quaternion.Euler(0, 0, 90), Tiles);
+            Instantiate(tilePrefab, new Vector2(-currentLevelData.Width / 2 + offset, -currentLevelData.Height / 2), Quaternion.Euler(0, 0, 90), Tiles);
+        }
+        for (float i = 0, offset = 0.5f; i < currentLevelData.Height; i++, offset++)
+        {
+            Instantiate(tilePrefab, new Vector2(-currentLevelData.Width / 2, currentLevelData.Height / 2 - offset), Quaternion.identity, Tiles);
+            Instantiate(tilePrefab, new Vector2(currentLevelData.Width / 2, currentLevelData.Height / 2 - offset), Quaternion.identity, Tiles);
+        }
+    }
+
+    /// <summary>Draw inner walls for the current level.</summary>
+    private void DrawObstacles()
+    {
+        foreach (var tile in currentLevelData.Grid)
+        {
+            Instantiate(tilePrefab, tile.Position, tile.Rotation, Tiles);
+        }
+    }
+    #endregion
 }

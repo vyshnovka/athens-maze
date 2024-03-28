@@ -1,36 +1,34 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Net;
 using UnityEngine;
 
 public class EnemyController : EntityController
 {
+    /// <summary>Find next position to get closet to the player (horizontal move is a priority).</summary>
     public Vector2 FindPath()
     {
-        var player = GameManager.instance.player.transform.position;
+        var player = GameManager.Instance.Player.transform.position;
 
-        if (player.x < transform.position.x && !CheckForWall(Vector2.left))
+        if (player.x < transform.position.x && !IsMoveBlocked(Vector2.left))
         {
-            //player is on the left
+            //Player is on the left.
             return Vector2.left;
         }
 
-        if (player.x > transform.position.x && !CheckForWall(Vector2.right))
+        if (player.x > transform.position.x && !IsMoveBlocked(Vector2.right))
         {
-            //player is on the right
+            //player is on the right.
             return Vector2.right;
         }
 
-        //player is in the same column
-        if (player.y > transform.position.y && !CheckForWall(Vector2.up))
+        //Player is in the same column.
+        if (player.y > transform.position.y && !IsMoveBlocked(Vector2.up))
         {
-            //player is above
+            //Player is above.
             return Vector2.up;
         }
         
-        if (player.y < transform.position.y && !CheckForWall(Vector2.down))
+        if (player.y < transform.position.y && !IsMoveBlocked(Vector2.down))
         {
-            //player is below
+            //Player is below.
             return Vector2.down;
         }
 

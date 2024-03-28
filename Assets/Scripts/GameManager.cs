@@ -1,71 +1,95 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager instance;
+    public static GameManager Instance;
 
-    public PlayerController player;
-    public EnemyController enemy;
-    public Transform exit;
+    [Header("Entities")]
+    [SerializeField]
+    private PlayerController player;
+    [SerializeField]
+    private EnemyController enemy;
 
-    [NonSerialized]
-    public bool playerCanMove = true;
-    [NonSerialized]
-    public bool enemyCanMove = false;
+    [Header("Essential elements")]
+    [SerializeField]
+    private Transform exit;
 
+    private bool playerCanMove = true;
+
+    [Header("Events")]
     [SerializeField]
     private UnityEvent onWinEvent;
     [SerializeField]
     private UnityEvent onLooseEvent;
 
+    public PlayerController Player { get => player; set => player = value; }
+    public bool PlayerCanMove { get => playerCanMove; set => playerCanMove = value; }
+
     void Awake()
     {
-        if (instance)
+        if (Instance)
         {
-            Destroy(instance);
+            Destroy(Instance);
         }
 
-        instance = this;
+        Instance = this;
     }
 
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.U))
         {
-            UndoPreviousStep();
+            if (PlayerCanMove) 
+            {
+                UndoPreviousStep();
+            }
         }
-        if (Input.GetKeyDown(KeyCode.W))
+        else if (Input.GetKeyDown(KeyCode.W))
         {
-            player.PushCurrentPositionInStack();
+            if (PlayerCanMove)
+            {
+                Player.PushCurrentPositionInStack();
 
-            ExchangeTurns();
-            NonPlayerTurn();
+                ExchangeTurns();
+                NonPlayerTurn();
+            }
         }
-        if (Input.GetKeyDown(KeyCode.R))
+        else if (Input.GetKeyDown(KeyCode.R))
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            if (PlayerCanMove || IsPlayerDead())
+            {
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            }
+        }
+        else if (Input.GetKeyDown(KeyCode.Escape))
+        {
+#if UNITY_EDITOR
+            EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
         }
     }
 
-    public void ExchangeTurns()
-    {
-        playerCanMove = !playerCanMove;
-    }
+    #region Entity Moves Management
+    public void ExchangeTurns() => PlayerCanMove = !PlayerCanMove;
 
+    /// <summary>Prevent player movement while enemy is taking steps.</summary>
     public void NonPlayerTurn()
     {
-        if (!playerCanMove && !IsWin())
+        if (!PlayerCanMove && !HasPlayerWon())
         {
             StartCoroutine(WaitForEnemy());
         }
     }
 
-    //to prevent moving while enemy is still taking steps
     private IEnumerator WaitForEnemy()
     {
         yield return new WaitForSeconds(0f);
@@ -80,34 +104,32 @@ public class GameManager : MonoBehaviour
                 enemy.Move(direction);
             }
 
-            IsDead();
+            CheckForDeathAndDie();
         }
 
         ExchangeTurns();
     }
 
-    private bool IsDead()
+    private bool IsPlayerDead() => Player.transform.position == enemy.transform.position;
+
+    private void CheckForDeathAndDie()
     {
-        if (player.transform.position == enemy.transform.position)
+        if (IsPlayerDead())
         {
             ExchangeTurns();
 
             onLooseEvent?.Invoke();
-
-            return true;
         }
-
-        return false;
     }
 
-    public bool IsWin()
+    public bool HasPlayerWon()
     {
-        if (IsDead())
+        if (IsPlayerDead())
         {
             return false;
         }
 
-        if (player.transform.position == exit.position)
+        if (Player.transform.position == exit.position)
         {
             onWinEvent?.Invoke();
 
@@ -117,11 +139,12 @@ public class GameManager : MonoBehaviour
         return false;
     }
 
-    //undo enemy's and player's moves from the previous step
+    /// <summary>Undo both enemy and player moves from the previous step.</summary>
     private void UndoPreviousStep()
     {
         enemy.UndoMove();
         enemy.UndoMove();
-        player.UndoMove();
+        Player.UndoMove();
     }
+    #endregion
 }
