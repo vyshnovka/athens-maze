@@ -1,21 +1,17 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Level", menuName = "Scriptable Object/Level")]
 public class LevelScriptableObject : ScriptableObject
 {
-    //height and width must me even for the code to work
-    public int width;
-    public int height;
+    public int Width;
+    public int Height;
 
-    public Vector2 playerPos;
-    public Vector2 enemyPos;
+    public Vector2 PlayerPosition;
+    public Vector2 EnemyPosition;
+    public Vector2 ExitPosition;
 
-    public List<Tile> grid;
-    public GameObject tile;
+    public List<Tile> Grid;
 
-    public Vector2 exitPos;
-
-    public string notification;
+    public string Note;
 }
