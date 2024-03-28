@@ -17,5 +17,7 @@ MonoBehaviour:
   PlayerPosition: {x: 0.5, y: 0.5}
   EnemyPosition: {x: -2.5, y: 0.5}
   ExitPosition: {x: -0.5, y: -1.5}
-  Grid: []
+  Grid:
+  - position: {x: 0.5, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0.70710677, w: 0.70710677}
   Note: here you'll learn to use enemy's horizontal move as an advantage
