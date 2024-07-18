@@ -74,7 +74,7 @@ public class LevelBuilder : EditorWindow
         {
             Vector2 position = tile.position;
 
-            // heck if the tile is within the borders to avoid frame duplication.
+            //Check if the tile is within the borders to avoid outer frame duplication.
             if (position.x > -borderSize && position.x < borderSize && position.y > -borderSize && position.y < borderSize)
             {
                 //Create a new Tile instance and save it.
